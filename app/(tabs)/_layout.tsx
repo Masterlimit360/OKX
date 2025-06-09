@@ -1,11 +1,7 @@
+import { Feather, Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { View } from 'react-native';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
@@ -13,32 +9,79 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+      screenOptions={({ route }) => ({
+      tabBarActiveTintColor: '#fff',
+      tabBarInactiveTintColor: '#888',
+      tabBarStyle: {
+        backgroundColor: '#111',
+        borderTopWidth: 0,
+        height: 60,
+      },
+      tabBarLabelStyle: {
+        fontSize: 12,
+      },
+      headerShown: false,
+      })}>
       <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
+      name="index"
+      options={{
+        title: 'OKX',
+        tabBarIcon: ({ color, size }) => (
+        <Ionicons name="home-outline" size={size} color={color} />
+        ),
+      }}
       />
       <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
+      name="markets"
+      options={{
+        title: 'Markets',
+        tabBarIcon: ({ color, size }) => (
+        <Ionicons name="bar-chart-outline" size={size} color={color} />
+        ),
+      }}
+      />
+      <Tabs.Screen
+      name="trade"
+      options={{
+        title: '',
+        tabBarIcon: ({ color, size }) => (
+          <View
+            style={{
+              backgroundColor: '#fff',
+              borderRadius: 32,
+              padding: 8,
+              marginBottom: 20,
+              alignItems: 'center',
+              justifyContent: 'center',
+              shadowColor: '#000',
+              shadowOpacity: 0.15,
+              shadowRadius: 8,
+              elevation: 6,
+            }}
+          >
+            <Ionicons name="swap-horizontal" size={32} color="#111" />
+          </View>
+        ),
+        tabBarLabel: () => null,
+      }}
+      />
+      <Tabs.Screen
+      name="explore"
+      options={{
+        title: 'Explore',
+        tabBarIcon: ({ color, size }) => (
+        <Feather name="compass" size={size} color={color} />
+        ),
+      }}
+      />
+      <Tabs.Screen
+      name="assets"
+      options={{
+        title: 'Assets',
+        tabBarIcon: ({ color, size }) => (
+        <Ionicons name="wallet-outline" size={size} color={color} />
+        ),
+      }}
       />
     </Tabs>
   );
