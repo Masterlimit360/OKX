@@ -1,229 +1,201 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
 export default function TradeScreen() {
   const [side, setSide] = useState<'Buy' | 'Sell'>('Buy');
-  const [borrow, setBorrow] = useState(false);
-  const [orderType, setOrderType] = useState('Limit order');
-  const [price, setPrice] = useState('106,018.6');
+  const [fromToken, setFromToken] = useState('DAI');
+  const [toToken, setToToken] = useState('FXS');
   const [amount, setAmount] = useState('');
-  const [tpSl, setTpSl] = useState(false);
+  const [activeTab, setActiveTab] = useState<'Buy' | 'Sell'>('Buy');
+  const [nextBtnPressed, setNextBtnPressed] = useState(false);
+
+  const isBuy = activeTab === 'Buy';
+  const mainToken = isBuy ? toToken : fromToken;
+  const subToken = isBuy ? fromToken : toToken;
+  const mainLabel = isBuy ? 'Buy' : 'Sell';
+  const subLabel = isBuy ? 'Pay with' : 'For';
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 32 }}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.pair}>BTC/USDT</Text>
-        <Text style={styles.pairChange}>+0.44%</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' }}>
-          <Ionicons name="star-outline" size={22} color="#fff" style={{ marginRight: 16 }} />
-          <Ionicons name="settings-outline" size={22} color="#fff" />
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: '#111' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
+    >
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 64 }}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Easy</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' }}>
+            <Ionicons name="stats-chart" size={22} color="#fff" style={{ marginRight: 16 }} />
+            <Ionicons name="ellipsis-horizontal" size={22} color="#fff" />
+          </View>
         </View>
-      </View>
 
-      {/* Chart Placeholder */}
-      <View style={styles.chartBox}>
-        <Text style={{ color: '#888', textAlign: 'center', marginTop: 40 }}>TradingView Chart</Text>
-      </View>
-
-      {/* Timeframe Tabs */}
-      <View style={styles.timeframeRow}>
-        {['15m', '1h', '4h', '1D', 'More'].map((tf, idx) => (
-          <TouchableOpacity key={tf} style={[styles.timeframeBtn, tf === '1D' && styles.timeframeBtnActive]}>
-            <Text style={[styles.timeframeText, tf === '1D' && styles.timeframeTextActive]}>{tf}</Text>
-          </TouchableOpacity>
-        ))}
-        <TouchableOpacity style={{ marginLeft: 'auto' }}>
-          <Text style={{ color: '#aaa', fontSize: 13 }}>Hide</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Trade Form */}
-      <View style={styles.tradeBox}>
         {/* Buy/Sell Tabs */}
         <View style={styles.sideTabs}>
           <TouchableOpacity
-            style={[styles.sideTab, side === 'Buy' && styles.sideTabActiveBuy]}
-            onPress={() => setSide('Buy')}
+            style={[styles.sideTab, activeTab === 'Buy' && styles.sideTabActive]}
+            onPress={() => setActiveTab('Buy')}
           >
-            <Text style={[styles.sideTabText, side === 'Buy' && styles.sideTabTextActiveBuy]}>Buy</Text>
+            <Text style={[styles.sideTabText, activeTab === 'Buy' && styles.sideTabTextActive]}>Buy</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.sideTab, side === 'Sell' && styles.sideTabActiveSell]}
-            onPress={() => setSide('Sell')}
+            style={[styles.sideTab, activeTab === 'Sell' && styles.sideTabActive]}
+            onPress={() => setActiveTab('Sell')}
           >
-            <Text style={[styles.sideTabText, side === 'Sell' && styles.sideTabTextActiveSell]}>Sell</Text>
+            <Text style={[styles.sideTabText, activeTab === 'Sell' && styles.sideTabTextActive]}>Sell</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Borrow */}
-        <View style={styles.borrowRow}>
-          <TouchableOpacity style={styles.checkbox} onPress={() => setBorrow(!borrow)}>
-            {borrow && <View style={styles.checkboxChecked} />}
-          </TouchableOpacity>
-          <Text style={styles.borrowText}>Borrow</Text>
-        </View>
-
-        {/* Order Type */}
-        <View style={styles.inputRow}>
-          <Text style={styles.inputLabel}>Limit order</Text>
-          <Ionicons name="chevron-down" size={16} color="#aaa" style={{ marginLeft: 4 }} />
-        </View>
-
-        {/* Price */}
-        <View style={styles.inputRow}>
+        {/* Amount Input */}
+        <View style={styles.amountRow}>
           <TextInput
-            style={styles.input}
-            value={price}
-            onChangeText={setPrice}
-            keyboardType="numeric"
-            placeholder="Price (USDT)"
-            placeholderTextColor="#888"
-          />
-        </View>
-
-        {/* Amount */}
-        <View style={styles.inputRow}>
-          <TextInput
-            style={styles.input}
+            style={styles.amountInput}
             value={amount}
             onChangeText={setAmount}
             keyboardType="numeric"
-            placeholder="Amount (BTC)"
+            placeholder="0"
             placeholderTextColor="#888"
           />
+          <View style={styles.tokenIcon} />
+          <Text style={styles.amountToken}>{mainToken}</Text>
         </View>
+        <Text style={styles.amountSub}>0.00 {subToken}</Text>
 
-        {/* Total */}
-        <View style={styles.inputRow}>
-          <TextInput
-            style={styles.input}
-            value="0"
-            editable={false}
-            placeholder="Total (USDT)"
-            placeholderTextColor="#888"
-          />
+        {/* Token Selection */}
+        <View style={styles.tokenSelectRow}>
+          <View style={styles.tokenSelectItem}>
+            <View style={styles.tokenIconCircle}>
+              <Ionicons name="logo-usd" size={22} color="#f5ac37" />
+            </View>
+            <View>
+              <Text style={styles.tokenSelectLabel}>{mainLabel}</Text>
+              <Text style={styles.tokenSelectToken}>{fromToken}</Text>
+            </View>
+            <Text style={styles.tokenBalance}>Balance: 0</Text>
+            <Ionicons name="chevron-forward" size={18} color="#fff" style={{ marginLeft: 8 }} />
+          </View>
+          <View style={styles.tokenSelectLine} />
+          <View style={styles.tokenSelectItem}>
+            <View style={styles.tokenIconCircle}>
+              <Ionicons name="logo-usd" size={22} color="#fff" />
+            </View>
+            <View>
+              <Text style={styles.tokenSelectLabel}>{subLabel}</Text>
+              <Text style={styles.tokenSelectToken}>{toToken}</Text>
+            </View>
+            {isBuy && <Text style={styles.tokenBalance}>Balance: 0</Text>}
+            <Ionicons name="chevron-forward" size={18} color="#fff" style={{ marginLeft: 8 }} />
+          </View>
         </View>
+      </ScrollView>
 
-        {/* Available/Max */}
-        <View style={styles.availableRow}>
-          <Text style={styles.availableText}>Available</Text>
-          <Text style={styles.availableValue}>0 USDT</Text>
-          <Text style={styles.availableText}>Max buy</Text>
-          <Text style={styles.availableValue}>0 BTC</Text>
-        </View>
-
-        {/* TP/SL */}
-        <View style={styles.tpSlRow}>
-          <TouchableOpacity style={styles.checkbox} onPress={() => setTpSl(!tpSl)}>
-            {tpSl && <View style={styles.checkboxChecked} />}
-          </TouchableOpacity>
-          <Text style={styles.tpSlText}>TP/SL</Text>
-        </View>
-
-        {/* Buy/Sell Button */}
-        <TouchableOpacity style={[styles.tradeBtn, side === 'Buy' ? styles.buyBtn : styles.sellBtn]}>
-          <Text style={[styles.tradeBtnText, side === 'Buy' ? styles.buyBtnText : styles.sellBtnText]}>
-            {side === 'Buy' ? 'Buy BTC' : 'Sell BTC'}
-          </Text>
+      {/* Next Button */}
+      <View style={styles.nextBtnWrapper}>
+        <TouchableOpacity
+          style={[
+            styles.nextBtn,
+            nextBtnPressed && styles.nextBtnPressed,
+          ]}
+          disabled
+          activeOpacity={0.7}
+          onPressIn={() => setNextBtnPressed(true)}
+          onPressOut={() => setNextBtnPressed(false)}
+        >
+          <Text style={styles.nextBtnText}>Next</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Order Book */}
-      <View style={styles.orderBookRow}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.orderBookPriceRed}>106,021.0</Text>
-          <Text style={styles.orderBookPriceRed}>106,021.0</Text>
-          <Text style={styles.orderBookPriceRed}>106,021.0</Text>
-          <Text style={styles.orderBookPriceRed}>106,019.8</Text>
-          <Text style={styles.orderBookPriceRed}>106,018.7</Text>
-        </View>
-        <View style={{ flex: 1, alignItems: 'center' }}>
-          <Text style={styles.orderBookPriceGreen}>106,018.6</Text>
-          <Text style={styles.orderBookPriceGreen}>106,018.6</Text>
-          <Text style={styles.orderBookPriceGreen}>106,017.5</Text>
-          <Text style={styles.orderBookPriceGreen}>106,016.4</Text>
-          <Text style={styles.orderBookPriceGreen}>106,016.3</Text>
-        </View>
-      </View>
-
-      {/* Orders/Assets Tabs */}
-      <View style={styles.bottomTabsRow}>
-        <Text style={styles.bottomTab}>Orders (0)</Text>
-        <Text style={styles.bottomTab}>Assets (0)</Text>
-      </View>
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
+const PURPLE = '#a259ec';
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#111', paddingHorizontal: 12 },
+  container: { flex: 1, backgroundColor: '#111', paddingHorizontal: 0 },
   header: {
-    flexDirection: 'row', alignItems: 'center', marginTop: 16, marginBottom: 8,
+    flexDirection: 'row', alignItems: 'center', marginTop: 32, marginBottom: 18, paddingHorizontal: 18,
   },
-  pair: { color: '#fff', fontWeight: 'bold', fontSize: 20, marginRight: 10 },
-  pairChange: { color: '#13e07b', fontWeight: 'bold', fontSize: 15 },
-  chartBox: {
-    backgroundColor: '#181818', borderRadius: 12, height: 160, marginBottom: 8,
-    justifyContent: 'center', alignItems: 'center',
-  },
-  timeframeRow: {
-    flexDirection: 'row', alignItems: 'center', marginBottom: 8,
-  },
-  timeframeBtn: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  timeframeBtnActive: { backgroundColor: '#222' },
-  timeframeText: { color: '#aaa', fontSize: 13 },
-  timeframeTextActive: { color: '#fff', fontWeight: 'bold' },
-  tradeBox: {
-    backgroundColor: '#181818', borderRadius: 14, padding: 14, marginBottom: 12,
-  },
+  title: { color: '#fff', fontWeight: 'bold', fontSize: 32 },
   sideTabs: {
-    flexDirection: 'row', marginBottom: 12,
+    flexDirection: 'row', alignSelf: 'flex-start', marginLeft: 18, marginBottom: 18,
+    backgroundColor: '#222', borderRadius: 24, padding: 4,
   },
   sideTab: {
-    flex: 1, alignItems: 'center', paddingVertical: 8, borderRadius: 20, marginHorizontal: 2,
-    backgroundColor: '#222',
+    paddingVertical: 6, paddingHorizontal: 28, borderRadius: 20,
+    backgroundColor: 'transparent',
   },
-  sideTabActiveBuy: { backgroundColor: '#13e07b' },
-  sideTabActiveSell: { backgroundColor: '#ff4d4f' },
-  sideTabText: { color: '#aaa', fontWeight: 'bold', fontSize: 15 },
-  sideTabTextActiveBuy: { color: '#111' },
-  sideTabTextActiveSell: { color: '#fff' },
-  borrowRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  checkbox: {
-    width: 18, height: 18, borderRadius: 4, borderWidth: 1, borderColor: '#888', marginRight: 8, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#222',
+  sideTabActive: {
+    backgroundColor: '#fff',
+    shadowColor: PURPLE,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  checkboxChecked: {
-    width: 12, height: 12, borderRadius: 2, backgroundColor: '#13e07b',
+  sideTabText: { color: PURPLE, fontWeight: 'bold', fontSize: 18 },
+  sideTabTextActive: { color: '#111' },
+  amountRow: {
+    flexDirection: 'row', alignItems: 'center', marginLeft: 18, marginBottom: 2,
   },
-  borrowText: { color: '#fff', fontSize: 14 },
-  inputRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  inputLabel: { color: '#fff', fontSize: 15, marginRight: 4 },
-  input: {
-    flex: 1, backgroundColor: '#222', borderRadius: 8, padding: 10, color: '#fff', fontSize: 15,
+  amountInput: {
+    color: '#fff',
+    fontSize: 54,
+    fontWeight: 'bold',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    flex: 1,
+    minWidth: 80,
   },
-  availableRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  availableText: { color: '#aaa', fontSize: 12 },
-  availableValue: { color: '#fff', fontWeight: 'bold', fontSize: 12 },
-  tpSlRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  tpSlText: { color: '#fff', fontSize: 14 },
-  tradeBtn: {
-    borderRadius: 24, paddingVertical: 14, alignItems: 'center', marginTop: 8,
+  tokenIcon: {
+    width: 18, height: 18, borderRadius: 4, backgroundColor: PURPLE, marginHorizontal: 8,
   },
-  buyBtn: { backgroundColor: '#13e07b' },
-  sellBtn: { backgroundColor: '#ff4d4f' },
-  tradeBtnText: { fontWeight: 'bold', fontSize: 16 },
-  buyBtnText: { color: '#111' },
-  sellBtnText: { color: '#fff' },
-  orderBookRow: {
-    flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8,
+  amountToken: { color: '#888', fontSize: 44, fontWeight: 'bold' },
+  amountSub: { color: '#888', fontSize: 18, marginLeft: 18, marginBottom: 18 },
+  tokenSelectRow: { marginHorizontal: 18, marginBottom: 18 },
+  tokenSelectItem: {
+    flexDirection: 'row', alignItems: 'center', backgroundColor: '#181818',
+    borderRadius: 12, padding: 14, marginBottom: 2,
   },
-  orderBookPriceRed: { color: '#ff4d4f', fontSize: 13, marginBottom: 2 },
-  orderBookPriceGreen: { color: '#13e07b', fontSize: 13, marginBottom: 2 },
-  bottomTabsRow: {
-    flexDirection: 'row', justifyContent: 'space-between', marginTop: 12, paddingHorizontal: 8,
+  tokenIconCircle: {
+    width: 36, height: 36, borderRadius: 18, backgroundColor: '#222', alignItems: 'center', justifyContent: 'center', marginRight: 12,
   },
-  bottomTab: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+  tokenSelectLabel: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  tokenSelectToken: { color: '#aaa', fontSize: 13 },
+  tokenBalance: { color: '#aaa', fontSize: 13, marginLeft: 12, marginRight: 8 },
+  tokenSelectLine: {
+    height: 18, width: 2, backgroundColor: PURPLE, alignSelf: 'center', marginLeft: 28, marginBottom: 2,
+  },
+  nextBtnWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 18,
+  },
+  nextBtn: {
+    backgroundColor: PURPLE,
+    borderRadius: 32,
+    paddingVertical: 18,
+    alignItems: 'center',
+    width: '100%',
+    opacity: 1,
+    transform: [{ scale: 1 }],
+  },
+  nextBtnPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.97 }],
+  },
+  nextBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 18 },
 });

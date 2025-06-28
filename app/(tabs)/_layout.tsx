@@ -21,22 +21,23 @@ export default function TabLayout() {
         fontSize: 12,
       },
       headerShown: false,
-      })}>
+      })}
+    >
       <Tabs.Screen
-      name="index"
+      name="home"
       options={{
-        title: 'OKX',
+        title: 'Home',
         tabBarIcon: ({ color, size }) => (
-        <Ionicons name="home-outline" size={size} color={color} />
+        <Ionicons name="wallet" size={size} color={color} />
         ),
       }}
       />
       <Tabs.Screen
-      name="markets"
+      name="token"
       options={{
-        title: 'Markets',
+        title: 'Tokens',
         tabBarIcon: ({ color, size }) => (
-        <Ionicons name="bar-chart-outline" size={size} color={color} />
+        <Ionicons name="cash" size={size} color={color} />
         ),
       }}
       />
@@ -45,41 +46,41 @@ export default function TabLayout() {
       options={{
         title: '',
         tabBarIcon: ({ color, size }) => (
-          <View
-            style={{
-              backgroundColor: '#fff',
-              borderRadius: 32,
-              padding: 8,
-              marginBottom: 20,
-              alignItems: 'center',
-              justifyContent: 'center',
-              shadowColor: '#000',
-              shadowOpacity: 0.15,
-              shadowRadius: 8,
-              elevation: 6,
-            }}
-          >
-            <Ionicons name="swap-horizontal" size={32} color="#111" />
-          </View>
+        <View
+          style={{
+          backgroundColor: '#fff',
+          borderRadius: 32,
+          padding: 8,
+          marginBottom: 20,
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadowColor: '#000',
+          shadowOpacity: 0.15,
+          shadowRadius: 8,
+          elevation: 6,
+          }}
+        >
+          <Ionicons name="swap-horizontal" size={32} color="#111" />
+        </View>
         ),
         tabBarLabel: () => null,
       }}
       />
       <Tabs.Screen
-      name="explore"
+      name="defi"
       options={{
-        title: 'Explore',
+        title: 'Defi',
         tabBarIcon: ({ color, size }) => (
         <Feather name="compass" size={size} color={color} />
         ),
       }}
       />
       <Tabs.Screen
-      name="assets"
+      name="discover"
       options={{
-        title: 'Assets',
+        title: 'Discover',
         tabBarIcon: ({ color, size }) => (
-        <Ionicons name="wallet-outline" size={size} color={color} />
+        <Ionicons name="telescope" size={size} color={color} />
         ),
       }}
       />
